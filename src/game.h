@@ -10,22 +10,29 @@ struct House {
     int intriged;
 };
 
+struct piece {
+
+}
+
 void game(){
 
-    //! Nova implentação
+    //! Nova implentação - tabuleiro de structs
+
+
+
     
     //* Funções
     void setupGame(struct House *houses);
     void resetGameTableValues(int gameTable[6][6]);
     void getUserInput(char *input);
-    void drawInterface(int gameTable[6][6], int actualPeace, struct House *houses);
+    void drawInterface(int gameTable[6][6], int actualPiece, struct House *houses);
     void readScores(int matriz[6][6], struct House *houses);
     int moveTable(int table[6][6], char *input);
     int shuffleHouses(int *housesDeck, int size);
-    int insetInTable(int matriz[6][6], char *commandInput, int peace, int round_0);
+    int insetInTable(int matriz[6][6], char *commandInput, int piece, int round_0);
 
     //* Variaveis
-    int actualPeace, size, newPeace, play, round_0;
+    int actualPiece, size, newPiece, play, round_0;
 
     //* Ponteiros e atrelados
     int housesDeck[36] = {
@@ -49,7 +56,7 @@ void game(){
     //* Execução
     play = 1;
     round_0 = 1;
-    newPeace = 1;
+    newPiece = 1;
     size = 36;
 
     setupGame(pHouses);
@@ -57,15 +64,15 @@ void game(){
 
     do{//* Ciclo do jogo - Fase de Expanção
 
-        if(newPeace == 1 && size > 0){
-            actualPeace = shuffleHouses(housesDeck, size);
+        if(newPiece == 1 && size > 0){
+            actualPiece = shuffleHouses(housesDeck, size);
             size--;
-            newPeace = 0;
+            newPiece = 0;
         }
 
         readScores(gameTable, pHouses);
 
-        drawInterface(gameTable, actualPeace, pHouses);
+        drawInterface(gameTable, actualPiece, pHouses);
 
         getUserInput(pUserInputCommand);
 
@@ -74,7 +81,7 @@ void game(){
         
         if(moveTable(gameTable, pUserInputCommand) == 1) continue;
 
-        int result = insetInTable(gameTable, pUserInputCommand, actualPeace, round_0);
+        int result = insetInTable(gameTable, pUserInputCommand, actualPiece, round_0);
 
         switch(result){
             case 0:
@@ -90,7 +97,7 @@ void game(){
                 getchar();
                 break;
             case 3:
-                newPeace = 1;
+                newPiece = 1;
                 round_0 = 0;
                 break;
         }
@@ -207,7 +214,7 @@ int moveTable(int table[6][6], char *input){
     return 1;
 }
 
-int insetInTable(int matriz[6][6], char *commandInput, int peace, int round_0){
+int insetInTable(int matriz[6][6], char *commandInput, int piece, int round_0){
     
     int i = commandInput[0] - 65;
     int j = commandInput[1] - '1';
@@ -219,22 +226,22 @@ int insetInTable(int matriz[6][6], char *commandInput, int peace, int round_0){
     if(matriz[i][j] != 0) return 1;
 
     if(round_0 == 1){
-        matriz[i][j] = peace;
+        matriz[i][j] = piece;
         return 3; //* Posicionamento feito
     }
 
     //* preencher matriz
     if(i > 0 && matriz[i - 1][j] > 0){
-        matriz[i][j] = peace;
+        matriz[i][j] = piece;
         return 3;
     }else if(i < 5 && matriz[i + 1][j] > 0){
-        matriz[i][j] = peace;
+        matriz[i][j] = piece;
         return 3;
     }else if(j > 0 && matriz[i][j - 1] > 0){
-        matriz[i][j] = peace;
+        matriz[i][j] = piece;
         return 3;
     }else if(j < 5 && matriz[i][j + 1] > 0){
-        matriz[i][j] = peace;
+        matriz[i][j] = piece;
         return 3;
     }else {
         return 2; //* Posicionamento não adjacente
@@ -259,19 +266,18 @@ void readScores(int matriz[6][6], struct House *houses){
     return;
 }
 
-void drawInterface(int gameTable[6][6], int actualPeace, struct House *houses){
+void drawInterface(int gameTable[6][6], int actualPiece, struct House *houses){
 
     system("clear");
 
     printf("===========  REGICIDA  =========== Proxima Peça:\n");
     printf(
         "   |  1 |  2 |  3 |  4 |  5 |  6 | \033[0;1;3%dm %d - %s\033[0;0m\n",
-        actualPeace,
-        actualPeace,
-        houses[actualPeace -1].name
+        actualPiece,
+        actualPiece,
+        houses[actualPiece -1].name
     );
     printf("================================== PONTUAÇOES\n");
-
 
     for(int i = 0; i < 6; i++){
 

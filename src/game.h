@@ -3,6 +3,8 @@
 #include <time.h>
 #include <string.h>
 
+#include "./tool_box.h"
+
 struct House {
     char name[9];
     int objective;
@@ -12,7 +14,7 @@ struct House {
 
 struct piece {
 
-}
+};
 
 void game(){
 
@@ -268,7 +270,9 @@ void readScores(int matriz[6][6], struct House *houses){
 
 void drawInterface(int gameTable[6][6], int actualPiece, struct House *houses){
 
-    system("clear");
+    void clearScreen();
+
+    clearScreen();
 
     printf("===========  REGICIDA  =========== Proxima Peça:\n");
     printf(

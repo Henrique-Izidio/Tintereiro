@@ -3,8 +3,6 @@
 #include <time.h>
 #include <string.h>
 
-#define MAX 36
-
 struct House {
     char name[9];
     int objective;
@@ -13,20 +11,15 @@ struct House {
 };
 
 void game(){
+
+    //! Nova implentação
     
-    //? ainda em impletação
-    void setupGame(struct House *houses);
-
-    struct House houses[6];
-    struct House *pHouses = houses;
-
-    setupGame(pHouses);
-
     //* Funções
+    void setupGame(struct House *houses);
     void resetGameTableValues(int gameTable[6][6]);
     void getUserInput(char *input);
-    void drawInterface(int gameTable[6][6], int actualPeace, int *scores, struct House *houses);
-    void readScores(int matriz[6][6],int *scores);
+    void drawInterface(int gameTable[6][6], int actualPeace, struct House *houses);
+    void readScores(int matriz[6][6], struct House *houses);
     int moveTable(int table[6][6], char *input);
     int shuffleHouses(int *housesDeck, int size);
     int insetInTable(int matriz[6][6], char *commandInput, int peace, int round_0);
@@ -45,8 +38,8 @@ void game(){
     };
     int *pHousesDeck = housesDeck;
 
-    int scores[6] = { 0, 0, 0, 0, 0, 0 };
-    int *pScores = scores;
+    struct House houses[6];
+    struct House *pHouses = houses;
     
     char UserInputCommand[100];
     char *pUserInputCommand = UserInputCommand;
@@ -57,8 +50,9 @@ void game(){
     play = 1;
     round_0 = 1;
     newPeace = 1;
-    size = MAX;
+    size = 36;
 
+    setupGame(pHouses);
     resetGameTableValues(gameTable);
 
     do{//* Ciclo do jogo - Fase de Expanção
@@ -69,9 +63,9 @@ void game(){
             newPeace = 0;
         }
 
-        readScores(gameTable, pScores);
+        readScores(gameTable, pHouses);
 
-        drawInterface(gameTable, actualPeace, pScores, pHouses);
+        drawInterface(gameTable, actualPeace, pHouses);
 
         getUserInput(pUserInputCommand);
 
@@ -247,25 +241,25 @@ int insetInTable(int matriz[6][6], char *commandInput, int peace, int round_0){
     }
 }
 
-void readScores(int matriz[6][6],int *scores){
+void readScores(int matriz[6][6], struct House *houses){
 
     for(int i = 0; i < 6; i++){
         for(int j = 0; j < 6; j++){
-            scores[i] = 0;
+            houses[i].actualScore = 0;
         }
     }
 
     for(int i = 0; i < 6; i++){
         for(int j = 0; j < 6; j++){
             if(i > 0 && i < 5 && j > 0 && j < 5 && matriz[i][j] > 0){
-                scores[(matriz[i][j]-1)]++;
+                houses[(matriz[i][j]-1)].actualScore++;
             }
         }
     }
     return;
 }
 
-void drawInterface(int gameTable[6][6], int actualPeace, int *scores, struct House *houses){
+void drawInterface(int gameTable[6][6], int actualPeace, struct House *houses){
 
     system("clear");
 
@@ -289,7 +283,10 @@ void drawInterface(int gameTable[6][6], int actualPeace, int *scores, struct Hou
             printf("\033[255;0m| "); // reseta para a cor padrão
         }
 
-        printf("%d - \033[0;1;3%dm%s  %d Pontos\033[0;0m\n", i+1, i+1, houses[i].name, scores[i]);
+        printf(
+            "%d - \033[0;1;3%dm%s  %d/%d Pontos\033[0;0m\n",
+            i+1, i+1, houses[i].name, houses[i].actualScore, houses[i].objective
+        );
     }
 
     printf("\nSeu proximo movimento sera: ");

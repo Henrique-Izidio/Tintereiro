@@ -68,6 +68,8 @@ void introduc() {
 }
 
 void Menu() {
+    void clearScreen();
+    clearScreen();
     printf("\n");
     printf("\x1b[31m");
     printf("******** REGICIDA ********\n");

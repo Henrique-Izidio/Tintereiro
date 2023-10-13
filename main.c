@@ -16,7 +16,7 @@ int main() {
     void Menu();
     void clearScreen();
 
-    introduc();
+    //introduc();
     int escolha;
     while (1) {
        Menu();
@@ -27,7 +27,7 @@ int main() {
                 clearScreen();
                 printf("\nIniciando o jogo...\n");
                 clearScreen();
-                game();
+                game(3);
                 break;
             case 2:
                 clearScreen();

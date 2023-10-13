@@ -10,6 +10,7 @@ struct House {
     int objective;
     int actualScore;
     int intriged;
+    int revel;
 };
 
 struct Piece {
@@ -17,31 +18,30 @@ struct Piece {
     int intriged;
 };
 
-void game(){
+void game(int difficulty){
 
     //! Nova implentação - tabuleiro de structs
-    struct Piece **pPieces = (struct Piece **)malloc(6 * sizeof(struct Piece *));
-    for(int i = 0; i < 6; i++) {
-        pPieces[i] = (struct Piece *)malloc(6 * sizeof(struct Piece));
-    }
-
-    
-
-    void resetStructTable(struct Piece **matriz);
-    void readStructScores(struct Piece **matriz, struct House *houses);
-    void drawInterfaceWithStruct(struct Piece **matriz, int actualPiece, struct House *houses);
-    int moveStructTable(struct Piece **matriz, char *input);
-    int insetInStructTable(struct Piece **matriz, char *commandInput, int piece, int round_0);
+    void choiceToRevel(struct House *houses, int difficulty);    
     
     //* Funções
     void setupGame(struct House *houses);
     void getUserInput(char *input);
+    void resetStructTable(struct Piece **matriz);
+    void readStructScores(struct Piece **matriz, struct House *houses);
+    void drawInterfaceWithStruct(struct Piece **matriz, int actualPiece, struct House *houses);
     int shuffleHouses(int *housesDeck, int size);
+    int moveStructTable(struct Piece **matriz, char *input);
+    int insetInStructTable(struct Piece **matriz, char *commandInput, int piece, int round_0);
 
     //* Variaveis
     int actualPiece, size, newPiece, play, round_0;
 
     //* Ponteiros e atrelados
+    struct Piece **pPieces = (struct Piece **)malloc(6 * sizeof(struct Piece *));
+    for(int i = 0; i < 6; i++) {
+        pPieces[i] = (struct Piece *)malloc(6 * sizeof(struct Piece));
+    }
+
     int housesDeck[36] = {
         1, 2, 3, 4, 5, 6,
         1, 2, 3, 4, 5, 6,
@@ -68,6 +68,7 @@ void game(){
 
     setupGame(pHouses);
     resetStructTable(pPieces);
+    choiceToRevel(pHouses, difficulty);
 
     do{//* Ciclo do jogo - Fase de Expanção
 
@@ -109,7 +110,6 @@ void game(){
                 break;
         }
     }while(play == 1);
-
 }
 
 int shuffleHouses(int *housesDeck, int size){
@@ -149,6 +149,7 @@ void setupGame(struct House *houses){
         strcpy(houses[i].name, houseNames[i]);
         houses[i].actualScore = 0;
         houses[i].intriged = 0;
+        houses[i].revel = 0;
         houses[i].objective = shuffleObjectives(pObjectivesDeck, size);
         size--;
     }
@@ -219,6 +220,7 @@ void readStructScores(struct Piece **matriz, struct House *houses){
 void drawInterfaceWithStruct(struct Piece **matriz, int actualPiece, struct House *houses){
 
     void clearScreen();
+    char checkIfreveled(struct House houses, int index);
 
     clearScreen();
 
@@ -242,8 +244,8 @@ void drawInterfaceWithStruct(struct Piece **matriz, int actualPiece, struct Hous
         }
 
         printf(
-            "%d - \033[0;1;3%dm%s  %d/%d Pontos\033[0;0m\n",
-            i+1, i+1, houses[i].name, houses[i].actualScore, houses[i].objective
+            "%d - \033[0;1;3%dm%s  %d/%c Pontos\033[0;0m\n",
+            i+1, i+1, houses[i].name, houses[i].actualScore, checkIfreveled(houses[i], i)
         );
     }
 
@@ -362,5 +364,31 @@ int insetInStructTable(struct Piece **matriz, char *commandInput, int piece, int
         return 3;
     }else {
         return 2; //* Posicionamento não adjacente
+    }
+}
+
+char checkIfreveled(struct House house, int index){
+    if(house.revel == 0){
+        return '?';
+    }else{
+        char str[1];
+        sprintf(str, "%d", house.objective);
+        return str[0];
+    }
+}
+
+void choiceToRevel(struct House *houses, int difficulty){
+    int h;
+    for(int i = 0; i < difficulty; i++){
+        printf("Escolha uma casa para revelar seu objetivo: ");
+        printf("0 | 1 | 2 | 3 | 4 | 6");
+        do{
+            scanf("%d", &h);
+        }while(h < 0 || h > 6 || h == 5);
+        for(int j = 0; j < 6; j++){
+            if(houses[j].objective == h){
+                houses[j].revel = 1;
+            }
+        }
     }
 }

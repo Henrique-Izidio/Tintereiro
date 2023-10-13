@@ -19,14 +19,12 @@ struct Piece {
 };
 
 void game(int difficulty){
-
-    //! Nova implentação - tabuleiro de structs
-    void choiceToRevel(struct House *houses, int difficulty);    
     
     //* Funções
-    void setupGame(struct House *houses);
     void getUserInput(char *input);
+    void setupGame(struct House *houses);
     void resetStructTable(struct Piece **matriz);
+    void choiceToRevel(struct House *houses, int difficulty);    
     void readStructScores(struct Piece **matriz, struct House *houses);
     void drawInterfaceWithStruct(struct Piece **matriz, int actualPiece, struct House *houses);
     int shuffleHouses(int *housesDeck, int size);

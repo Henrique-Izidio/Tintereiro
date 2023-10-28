@@ -25,7 +25,8 @@ int main() {
 
         switch (escolha) {
             case 1:
-                //clearScreen();
+                clearScreen();
+                ;
                 int dif = Dificuldade();
                 printf("\nIniciando o jogo...\n");
                 clearScreen();
@@ -36,7 +37,6 @@ int main() {
                 printf(COR_VERDE "\nExibindo os créditos...\n"RESET_COR);
                 printf(COR_MAGENTA"\n JOGO FEITO PELO PROFESSOR HUGO ROBERTO PINHEIRO, \n ASSIM COMO O TRABALHO PARA A TURMA 2023.1 DE CIÊNCIDA DA COMPUTAÇÃO"RESET_COR);
                 printf(COR_MAGENTA"\n QUEM ESCREVEU O CÓDIGO.....HENRIQUE IZÍDIO, ISAIAS FERNANDES E PHELIPPE \n \n "RESET_COR);
-                __fpurge(stdin);
                 getchar();
                 clearScreen();
                 break;

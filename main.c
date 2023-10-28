@@ -53,13 +53,13 @@ int main() {
                 printf("    - MVE: Move para a esquerda\n");
                 printf("    - MVC: Move para a cima\n");
                 printf("    - MVB: Move para a baixo\n");
-                printf("Apenas é possivel mover o tabuleiro comleto. Só é possivel mover para determinada direção caso a borda da mesma esteja desocupada.\n\n");
+                printf("Apenas eh possivel mover o tabuleiro comleto.\nSo eh possivel mover para determinada direçao caso a borda da mesma esteja desocupada.\n\n");
                 
                 printf("Fase de Intriga:\n");
-                printf("1 - Para realizar a troca de duas peças digite as coordenadas de ambas as peças uma seguida da outra.\n");
+                printf("1 - Para realizar a troca de duas peças digite as coordenadas de ambas as pecas uma seguida da outra.\n");
                 printf("    - Exemplo: \"A1B2\", sem aspas.\n\n");
 
-                printf("Durante ambas as fases é possivel retornar ao menu com o comando \"SAIR\", sem aspas.\n");
+                printf("Durante ambas as fases eh possivel retornar ao menu com o comando \"SAIR\", sem aspas.\n");
                 printf("E indiferente escrever os comandos com letras maiusculas ou minusculas\n");
                 printf("Porem as coordenadas devem ser escritas com a letra primeiro e em seguida o numero.\n");
 

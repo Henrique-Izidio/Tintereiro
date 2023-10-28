@@ -15,7 +15,10 @@ int main() {
     void introduc();
     int Dificuldade();
     void clearScreen();
+    void setAnsi();
     void game();
+
+    setAnsi();
 
     //introduc();
     int escolha;

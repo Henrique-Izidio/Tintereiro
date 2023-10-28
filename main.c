@@ -11,10 +11,11 @@
 #define RESET_COR "\x1b[0m"
 
 int main() {
-    void game();
-    void introduc();
     void Menu();
+    void introduc();
+    int Dificuldade();
     void clearScreen();
+    void game();
 
     //introduc();
     int escolha;
@@ -24,10 +25,11 @@ int main() {
 
         switch (escolha) {
             case 1:
-                clearScreen();
+                //clearScreen();
+                int dif = Dificuldade();
                 printf("\nIniciando o jogo...\n");
                 clearScreen();
-                game(3);
+                game(dif);
                 break;
             case 2:
                 clearScreen();
@@ -69,7 +71,8 @@ void introduc() {
 
 void Menu() {
     void clearScreen();
-    clearScreen();
+
+    //clearScreen();
     printf("\n");
     printf("\x1b[31m");
     printf("******** REGICIDA ********\n");
@@ -77,8 +80,20 @@ void Menu() {
     printf(COR_AMARELA "1. Jogar\n"RESET_COR);
     printf(COR_VERDE "2. Créditos\n"RESET_COR);
     printf(COR_MAGENTA "3. Sair\n"RESET_COR);
-     printf("\x1b[31m");
+    printf("\x1b[31m");
     printf("*******************\n");
     printf("\x1b[0m");
     printf("Escolha uma opção: ");
+}
+
+int Dificuldade(){
+    int dif = 0;
+    while(dif != 1 && dif != 2 && dif != 3){
+        printf("SELECIONE UMA DIFICULDADE\n");
+        printf("1 - Dificil\n");
+        printf("2 - Normal\n");
+        printf("3 - Facil\n");
+        scanf("%d", &dif);
+    }
+    return dif;
 }

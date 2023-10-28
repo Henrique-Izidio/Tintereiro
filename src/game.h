@@ -27,12 +27,14 @@ void game(int difficulty){
     void choiceToRevel(struct House *houses, int difficulty);    
     void readStructScores(struct Piece **matriz, struct House *houses);
     void drawInterfaceWithStruct(struct Piece **matriz, int actualPiece, struct House *houses);
+    void exchangeValues(struct Piece **pPieces, int i1, int j1, int i2, int j2, struct House *pHouses);
+    int validateVictory(struct House *houses);
     int shuffleHouses(int *housesDeck, int size);
     int moveStructTable(struct Piece **matriz, char *input);
     int insetInStructTable(struct Piece **matriz, char *commandInput, int piece, int round_0);
 
     //* Variaveis
-    int actualPiece, size, newPiece, play, round_0;
+    int actualPiece, size, newPiece, play, round_0, intriga, victory;
 
     //* Ponteiros e atrelados
     struct Piece **pPieces = (struct Piece **)malloc(6 * sizeof(struct Piece *));
@@ -60,6 +62,8 @@ void game(int difficulty){
 
     //* Execução
     play = 1;
+    victory = 0;
+    intriga = 0;
     round_0 = 1;
     newPiece = 1;
     size = 36;
@@ -67,6 +71,14 @@ void game(int difficulty){
     setupGame(pHouses);
     resetStructTable(pPieces);
     choiceToRevel(pHouses, difficulty);
+
+    // for(int i = 0; i < 6; i++){
+    //     for(int j = 0; j < 6; j++){
+    //         actualPiece = shuffleHouses(housesDeck, size);
+    //         size--;
+    //         pPieces[i][j].value = actualPiece;
+    //     }
+    // }
 
     do{//* Ciclo do jogo - Fase de Expanção
 
@@ -83,7 +95,7 @@ void game(int difficulty){
         getUserInput(pUserInputCommand);
 
         //* Tratamento dos comandos
-        if(strcmp(pUserInputCommand, "SAIR") == 0) break;
+        if(strcmp(pUserInputCommand, "SAIR") == 0) return;
         
         if(moveStructTable(pPieces, pUserInputCommand) == 1) continue;
 
@@ -105,49 +117,103 @@ void game(int difficulty){
             case 3:
                 newPiece = 1;
                 round_0 = 0;
+                if(size == 0) play = 0;
                 break;
         }
     }while(play == 1);
 
+    for(int i = 0; i < 6; i++){
+        pHouses[i].revel = 1;
+    }
+
+    int control = 0;
+
     do{
-        getUserInput(pTextCommand);
+
+        int i1 = 0;
+        int j1 = 0;
+        int i2 = 0;
+        int j2 = 0;
+
+        readStructScores(pPieces, pHouses);
+
+        victory = validateVictory(pHouses);
+
+        intriga = 0;
+
+        for(int i = 0; i < 6; i++){
+            if(pHouses[i].intriged == 1){
+                intriga++;
+            }
+        }
+
+        if(victory == 1 || intriga == 6){
+            clearScreen();
+            break;
+        }
+
+        drawInterfaceWithStruct(pPieces, actualPiece, pHouses);
         
-        int i = pTextCommand[0] - 65;
-        int j = pTextCommand[1] - '1';
-        int i2 = pTextCommand[0] - 65;
-        int j2 = pTextCommand[1] - '1';
+        getUserInput(pUserInputCommand);
+
+        if(control == 0){
+            control = 1;
+            printf("Fase de intriga Iniciada");
+            getchar();
+            continue;
+        }
+
+        if(strcmp(pUserInputCommand, "SAIR") == 0) return;
         
+        i1 = pUserInputCommand[0] - 65;
+        j1 = pUserInputCommand[1] - '1';
+        i2 = pUserInputCommand[2] - 65;
+        j2 = pUserInputCommand[3] - '1';
+
         //* Comando invalido
-        if(i < 0 || i > 5 || j < 0 || j > 5) {
-            printf("A coordenada enviada é invalida");
+        if(i1 < 0 || i1 > 5 || j1 < 0 || j1 > 5) {
+            printf("Primeira coordenada é invalida\n");
+            getchar();
             continue;
         }else if(i2 < 0 || i2 > 5 || j2 < 0 || j2 > 5) {
-            printf("A coordenada enviada é invalida");
+            printf("Segunda coordenada é invalida\n");
+            getchar();
             continue;
         }
 
-        if(pPieces[i][j].intriged == 1 || pPieces[i2][j2].intriged == 1){
-            printf("A casa selecionada ja realizou intriga");
+        if(pPieces[i1][j1].intriged == 1 || pPieces[i2][j2].intriged == 1){
+            printf("Uma dos territorios já fiz intriga\n");
+            getchar();
             continue;
         }
 
-        int casa1 = pHouses[pPieces[i][j].value - 1].intriged;
-        int casa2 = pHouses[pPieces[i2][j2].value - 1].intriged;
-
-        if(casa1 == 1 && casa2 ==1){
-            printf("As casas selecionadas ja realizaram intriga");
+        if(pHouses[pPieces[i1][j1].value - 1].intriged && pHouses[pPieces[i2][j2].value - 1].intriged){
+            printf("As casas já fizeram intriga\n");
+            getchar();
             continue;
         }
 
-        if(!(j == j2 && (i-i2 == -1 || i-i2 == 1))){
-            printf("As casas devem ser adjacentes");
-            continue;
-        } else if(!(i == i2 && (j-j2 == -1 || j-j2 == 1))){
-            printf("As casas devem ser adjacentes");
-            continue;
+        if(i1 == i2 && (j1 - j2 == 1 || j1 - j2 == -1)){
+            exchangeValues(pPieces, i1, j1, i2, j2, pHouses);
+
+            getchar();
+        }else if(j1 == j2 && (i1 - i2 == 1 || i1 - i2 == -1)){
+            exchangeValues(pPieces, i1, j1, i2, j2, pHouses);
+            getchar();
+        }else{
+            printf("Os territorios não são adjacentes");
+            getchar();
         }
         
-    }while(intriga == 1);
+    }while(intriga < 6);
+
+    if(victory == 1){
+        printf("A guerra foi evitada com sucesso!");
+        printf("Gloria ao tintereiro!");
+    }else{
+        printf("Você falhou em sua missão");
+        printf("A guerra está entre nós");
+    }
 }
 
 int shuffleHouses(int *housesDeck, int size){
@@ -273,12 +339,25 @@ void drawInterfaceWithStruct(struct Piece **matriz, int actualPiece, struct Hous
 
     for(int i = 0; i < 6; i++){
 
+        char tag = '0';
+
         printf(" %c | ", (i+65));
 
         for(int j = 0; j < 6; j++){
             printf("\033[0;1;3%dm", matriz[i][j].value); // muda para a cor da casa
-            printf("0%d ", matriz[i][j].value); // pinta o numero da casa
+            if(matriz[i][j].intriged == 1){
+                tag = '!';
+            }else{
+                tag = '0';
+            }
+            printf("%c%d ", tag, matriz[i][j].value); // pinta o numero da casa
             printf("\033[255;0m| "); // reseta para a cor padrão
+        }
+
+        if(houses[i].intriged == 1){
+            printf("!");
+        }else{
+            printf(" ");
         }
 
         printf(
@@ -417,16 +496,101 @@ char checkIfreveled(struct House house, int index){
 
 void choiceToRevel(struct House *houses, int difficulty){
     int h;
+
+    printf("Escolha um objetivo e você descobrira a qual casa ele pertence!\n");
+    printf("0 | 1 | 2 | 3 | 4 | 6\n");
+
     for(int i = 0; i < difficulty; i++){
-        printf("Escolha uma casa para revelar seu objetivo: ");
-        printf("0 | 1 | 2 | 3 | 4 | 6");
+        printf("Escolha o %dº objetivo: ");
         do{
             scanf("%d", &h);
         }while(h < 0 || h > 6 || h == 5);
+
         for(int j = 0; j < 6; j++){
             if(houses[j].objective == h){
                 houses[j].revel = 1;
             }
         }
     }
+}
+
+void exchangeValues(struct Piece **pPieces, int i1, int j1, int i2, int j2, struct House *pHouses){
+
+    int indexHouse1 = pPieces[i1][j1].value - 1;
+    int indexHouse2 = pPieces[i2][j2].value - 1;
+
+    int opcao = 0;
+
+    if(pPieces[i1][j1].intriged == 1 && pPieces[i2][j2].intriged == 0){
+
+        pPieces[i2][j2].intriged = 1;
+
+    } else if(pPieces[i1][j1].intriged == 0 && pPieces[i2][j2].intriged == 1){
+
+        pPieces[i1][j1].intriged = 1;
+
+    }else{
+
+        char strI1 = i1 + 65;
+        char strJ1 = j1 + '1';
+        char strI2 = i2 + 65;
+        char strJ2 = i2 + '1';
+
+        printf("Escolha a peça que recebera a intriga:\n");
+        printf("\033[0;1;3%dm1 - %c%c: %s\n", pPieces[i1][j1].value, strI1, strJ1, pHouses[indexHouse1].name);
+        printf("\033[0;1;3%dm2 - %c%c: %s\n", pPieces[i2][j2].value, strI2, strJ2, pHouses[indexHouse2].name);
+        printf("\033[0;0m");
+
+        do{
+            printf("Sua escolha sera: ");
+            scanf("%d", &opcao);
+            if(opcao != 1 && opcao != 2) printf("Opcao invalida");
+        }while(opcao != 1 && opcao != 2);
+
+        if(opcao == 1) pPieces[i1][j1].intriged = 1;
+        if(opcao == 2) pPieces[i2][j2].intriged = 1;
+    }
+
+    if(pHouses[indexHouse1].intriged == 1 && pHouses[indexHouse2].intriged == 0){
+        
+        pHouses[indexHouse2].intriged = 1;
+
+    }else if(pHouses[indexHouse1].intriged == 0 && pHouses[indexHouse2].intriged == 1){
+        
+        pHouses[indexHouse1].intriged = 1;
+
+    }else{
+        printf("Escolha a casa que recebera a intriga:\n");
+        printf("\033[0;1;3%dm1 - %s\n", pPieces[i1][j1].value, pHouses[indexHouse1].name);
+        printf("\033[0;1;3%dm2 - %s\n", pPieces[i2][j2].value, pHouses[indexHouse2].name);
+        printf("\033[0;0m");
+
+        do{
+            printf("Sua escolha sera: ");
+            scanf("%d", &opcao);
+            if(opcao != 1 && opcao != 2) printf("Opcao invalida!");
+        }while(opcao != 1 && opcao != 2);
+
+        if(opcao == 1) pHouses[indexHouse1].intriged = 1;
+        if(opcao == 2) pHouses[indexHouse2].intriged = 1;
+    }
+
+    int temp = pPieces[i1][j1].value;
+
+    pPieces[i1][j1].value = pPieces[i2][j2].value;
+
+    pPieces[i2][j2].value  = temp;
+
+    return;
+}
+
+int validateVictory(struct House *houses){
+    int i;
+    for(i = 0; i < 6; i++){
+        if(houses[i].actualScore != houses[i].objective){
+            return 0;
+        }
+    }
+
+    return 1;
 }
